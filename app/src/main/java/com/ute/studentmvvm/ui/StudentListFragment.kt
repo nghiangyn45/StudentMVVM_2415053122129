@@ -21,7 +21,7 @@ class StudentListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: StudentViewModel by activityViewModels()
-    private lateinit var adapter: StudentAdapter
+    private lateinit var studentAdapter: StudentAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,21 +40,21 @@ class StudentListFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = StudentAdapter(
+        studentAdapter = StudentAdapter(
             onStudentClick = { student -> showStudentDetailDialog(student) },
             onDeleteClick = { student -> confirmDelete(student) }
         )
 
         binding.rvStudents.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = this@StudentListFragment.adapter
+            adapter = studentAdapter
             setHasFixedSize(true)
         }
     }
 
     private fun observeViewModel() {
         viewModel.allStudents.observe(viewLifecycleOwner) { list ->
-            adapter.submitList(list)
+            studentAdapter.submitList(list)
             binding.layoutEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
             binding.tvStudentCountBadge.text = "${list.size} sinh viên"
         }
