@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ute.studentmvvm.databinding.ItemStudentRoomBinding
 import com.ute.studentmvvm.model.Student
+import java.util.Locale
 
 class StudentAdapter(
     private val onStudentClick: (Student) -> Unit,
@@ -32,7 +33,7 @@ class StudentAdapter(
             binding.tvFullName.text = student.fullName
             binding.tvStudentCode.text = "MSSV: ${student.studentCode}"
             binding.tvEmail.text = student.email
-            binding.tvGpa.text = "GPA: ${String.format("%.2f", student.gpa)}"
+            binding.tvGpa.text = "GPA: ${String.format(Locale.US, "%.2f", student.gpa)}"
             binding.tvAvatar.text = student.fullName.trim().take(1).uppercase()
             binding.root.setOnClickListener { onStudentClick(student) }
             binding.btnDelete.setOnClickListener { onDeleteClick(student) }
