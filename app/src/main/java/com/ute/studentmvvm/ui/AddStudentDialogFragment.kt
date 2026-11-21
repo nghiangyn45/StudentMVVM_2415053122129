@@ -2,7 +2,6 @@ package com.ute.studentmvvm.ui
 
 import android.app.Dialog
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
@@ -16,7 +15,7 @@ class AddStudentDialogFragment : DialogFragment() {
     private val viewModel: StudentViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val binding = DialogAddStudentBinding.inflate(LayoutInflater.from(requireContext()))
+        val binding = DialogAddStudentBinding.inflate(layoutInflater)
 
         return AlertDialog.Builder(requireContext())
             .setTitle("Thêm Sinh Viên Mới")
@@ -39,7 +38,7 @@ class AddStudentDialogFragment : DialogFragment() {
                 val student = Student(
                     fullName = name,
                     studentCode = code,
-                    email = if (email.isNotEmpty()) email else "${code.lowercase()}@ute.udn.vn",
+                    email = email.ifEmpty { "${code.lowercase()}@ute.udn.vn" },
                     gpa = gpa
                 )
                 viewModel.insert(student)
