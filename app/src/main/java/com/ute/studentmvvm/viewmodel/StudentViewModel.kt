@@ -7,40 +7,41 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.ute.studentmvvm.model.Student
 import com.ute.studentmvvm.repository.StudentRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class StudentViewModel(private val repository: StudentRepository) : ViewModel() {
+class StudentViewModel(
+    private val repository: StudentRepository
+) : ViewModel() {
 
-    val allStudents: LiveData<List<Student>> = repository.allStudents.asLiveData(Dispatchers.IO)
+    val allStudents: LiveData<List<Student>> = repository.allStudents.asLiveData()
 
-    private val _statusMessage = MutableLiveData<String>()
-    val statusMessage: LiveData<String> get() = _statusMessage
+    private val _statusMessage = MutableLiveData<String?>()
+    val statusMessage: LiveData<String?> = _statusMessage
 
-    fun insert(student: Student) = viewModelScope.launch(Dispatchers.IO) {
+    fun insert(student: Student) = viewModelScope.launch {
         try {
             repository.insert(student)
-            _statusMessage.postValue("Đã thêm sinh viên: ${student.fullName}")
+            _statusMessage.value = "Đã lưu sinh viên ${student.fullName}"
         } catch (e: Exception) {
-            _statusMessage.postValue("Lỗi khi thêm: ${e.message}")
+            _statusMessage.value = "Lỗi thêm sinh viên: ${e.message}"
         }
     }
 
-    fun delete(student: Student) = viewModelScope.launch(Dispatchers.IO) {
+    fun delete(student: Student) = viewModelScope.launch {
         try {
             repository.delete(student)
-            _statusMessage.postValue("Đã xóa sinh viên: ${student.fullName}")
+            _statusMessage.value = "Đã xóa sinh viên ${student.fullName}"
         } catch (e: Exception) {
-            _statusMessage.postValue("Lỗi khi xóa: ${e.message}")
+            _statusMessage.value = "Lỗi xóa sinh viên: ${e.message}"
         }
     }
 
-    fun syncFromCloud() = viewModelScope.launch(Dispatchers.IO) {
-        val result = repository.syncFromCloud()
-        if (result.isSuccess) {
-            _statusMessage.postValue("Đã đồng bộ ${result.getOrNull()} sinh viên từ máy chủ!")
-        } else {
-            _statusMessage.postValue("Chưa thể kết nối máy chủ Cloud, sử dụng dữ liệu cục bộ.")
+    fun syncFromCloud() = viewModelScope.launch {
+        try {
+            repository.syncFromCloud()
+            _statusMessage.value = "Đồng bộ dữ liệu thành công"
+        } catch (e: Exception) {
+            _statusMessage.value = "Không thể đồng bộ: ${e.message ?: "Lỗi mạng"}"
         }
     }
 }
